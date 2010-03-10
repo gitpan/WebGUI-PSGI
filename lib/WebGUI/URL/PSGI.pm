@@ -1,5 +1,5 @@
 package WebGUI::URL::PSGI;
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 =head1 LEGAL
 
@@ -19,7 +19,7 @@ use strict;
 use warnings;
 
 use Plack::App::URLMap;
-use Plack::Server::Apache2;
+use Plack::Handler::Apache2;
 use Apache2::Const -compile => qw(DECLINED OK);
 
 use namespace::autoclean;
@@ -30,7 +30,7 @@ WebGUI::URL::PSGI
 
 =head1 VERSION
 
-version 0.1
+version 0.2
 
 =head1 DESCRIPTION
 
@@ -77,20 +77,20 @@ sub handler {
 
         $request->push_handlers(PerlResponseHandler => sub {
             my $app = $mapped{$prefix} ||= do {
-                my $app = Plack::Server::Apache2->load_app($apps->{$prefix});
+                my $app = Plack::Handler::Apache2->load_app($apps->{$prefix});
                 my $mapper = Plack::App::URLMap->new;
                 $mapper->mount($prefix => $app);
                 $mapper->to_app;
             };
 
             no warnings qw(redefine);
-            local *Plack::Server::Apache2::load_app = sub {
+            local *Plack::Handler::Apache2::load_app = sub {
                 return sub {
                     $_[0]->{wgSession} = $request->pnotes('wgSession');
                     goto $app;
                 };
             };
-            return Plack::Server::Apache2::handler($request);
+            return Plack::Handler::Apache2::handler($request);
         });
         return Apache2::Const::OK;
     }

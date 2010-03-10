@@ -11,10 +11,11 @@ name: WebGUI-PSGI
 requires:
   Apache2::Const: 0
   ExtUtils::MakeMaker: 6.11
+  Plack: 0.9913
   Plack::App::URLMap: 0
+  Plack::Handler::Apache2: 0
   Plack::Middleware: 0
   Plack::Request: 0
   Plack::Response: 0
-  Plack::Server::Apache2: 0
   namespace::autoclean: 0
-version: 0.1
+version: 0.2
